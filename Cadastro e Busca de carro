@@ -1,0 +1,197 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+
+#define MAX_CARROS 100
+
+typedef struct {
+    int numeroCadastro;
+    int codigoProduto;
+    char nome[50];
+    float valor;
+    char ano[100];
+} Carro;
+
+int quantidade = 0;
+
+void cadastrarCarro(Carro carros[]);
+void buscarCarro(Carro carros[]);
+void listarCarros(Carro carros[]);
+void listarCarrosPorValor(Carro carros[], int crescente);
+
+int main() {
+
+	setlocale(LC_ALL, "Portuguese_Brazil");
+
+    Carro carros[MAX_CARROS];
+    int opcao;
+    printf("*             ####      ###     ######           ##   ##  #######   ######    ####   ##   ##  ####      #####    #####   *\n" );
+    printf("*            ##  ##   ##   ##   ##  ##           ##   ##   ##   #     ##     ##  ##  ##   ##   ##      ### ###  ##   ##  * \n");
+    printf("*            ##       ##   ##   ##  ##           ##   ##   ##         ##    ##       ##   ##   ##      ##   ##  ##       *\n");
+    printf("*            ##       ##   ##   #####             ## ##    ####       ##    ##       ##   ##   ##      ##   ##   #####   *\n");
+    printf("*            ##       #######   ## ##             ## ##    ##         ##    ##       ##   ##   ##      ##   ##       ##  * \n");
+    printf("*            ##  ##   ##   ##   ## ##              ###     ##   #     ##     ##  ##  ##   ##   ##  ##  ### ###  ##   ##  *\n");
+    printf("*             ####    ##   ##   ### ##             ###    #######   ######    ####    #####   #######   #####    #####   *\n");
+    printf("                          |=============================================================================|  \n");
+    printf("                          |               Bem-vindo a Nossa Concessionária de Carros                    |  \n");
+    printf("                          | Nosso objetivo sempre será oferecer carros de qualidade a preços acessíveis.|  \n");
+    printf("                          |=============================================================================|  \n \n");
+
+    do {
+        printf("                                     |------------------MENU PRINCIPAL -----------------|                 \n");
+        printf("                                     |               1. Cadastrar Carro                 |                 \n");
+        printf("                                     |               2. Buscar Carro                    |                 \n");
+        printf("                                     |               3. Listar Carros                   |                 \n");
+        printf("                                     |               4. Sair do Programa                |                 \n");
+        printf("                                     |--------------------------------------------------|                 \n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+
+        switch(opcao) {
+            case 1:
+                do {
+                    cadastrarCarro(carros);
+                    char continuar;
+                    printf("\nDeseja continuar cadastrando carros (S/N)? ");
+                    scanf(" %c", &continuar);
+                    if (continuar != 'S' && continuar != 's') {
+                        break;
+                    }
+                } while (1);
+                break;
+            case 2:
+                do {
+                    buscarCarro(carros);
+                    char continuar;
+                    printf("\nDeseja continuar procurando carros (S/N)? ");
+                    scanf(" %c", &continuar);
+                    if (continuar != 'S' && continuar != 's') {
+                        break;
+                    }
+                } while (1);
+                break;
+            case 3:
+                printf("\n                    |---------------------- LISTA DE CARROS -----------------------------|              \n");
+                if (quantidade == 0) {
+                    printf("Nenhum carro cadastrado.\n");
+                } else {
+                    int ordem;
+                    printf("1. Todos os Carros \n");
+                    printf("2. Maior para o Menor Valor\n");
+                    printf("3. Menor para Maior Valor\n");
+                    printf("Opção: ");
+                    scanf("%d", &ordem);
+
+                    if (ordem == 1) {
+                        listarCarros(carros);
+                    } else {
+                        listarCarrosPorValor(carros, ordem == 3);
+                    }
+                }
+                break;
+            case 4:
+                printf("\nEncerrando o programa. Obrigado pela visita!\n");
+                break;
+            default:
+                printf("\nOpção invalida! Por favor, escolha uma opcao valida.\n");
+        }
+
+        printf("\n                         |-----------------------------------------------------------------------|      \n");
+        if (opcao != 4) {
+            printf("Pressione Enter para continuar no menu principal...");
+            getchar(); // Limpar o buffer de entrada
+            getchar(); // Aguardar o pressionamento de Enter antes de limpar a tela
+            system("clear || cls"); // Limpar a tela (funciona para Linux e Windows)
+        }
+    } while (opcao != 4);
+
+    return 0;
+}
+
+void cadastrarCarro(Carro carros[]) {
+    printf("\n                             |---------------------------CADASTRO DE CARRO--------------------------|           \n");
+
+    carros[quantidade].numeroCadastro = quantidade + 1;
+
+    printf("Nome do carro: ");
+    scanf(" %[^\n]s", carros[quantidade].nome);
+    printf("Valor do carro: ");
+    scanf("%f", &carros[quantidade].valor);
+    printf("Código do produto: ");
+    scanf("%d", &carros[quantidade].codigoProduto);
+    printf("Ano do carro: ");
+    scanf(" %[^\n]s", carros[quantidade].ano);
+
+    printf("\nCarro cadastrado com sucesso!\n");
+    quantidade++;
+}
+
+void buscarCarro(Carro carros[]) {
+    printf("\n                              |-----------------------------BUSCAR CARRO-------------------------|                  \n");
+    int opcao;
+    printf("Escolha a opção de busca:\n");
+    printf("1. Por código do produto\n");
+    printf("2. Por nome do carro\n");
+    printf("Opção: ");
+    scanf("%d", &opcao);
+
+    int chave;
+    char nome[50];
+    if (opcao == 1) {
+        printf("Digite o código do produto: ");
+        scanf("%d", &chave);
+    } else if (opcao == 2) {
+        printf("Digite o nome do carro: ");
+        scanf(" %[^\n]s", nome);
+    } else {
+        printf("Opção inválida!\n");
+        return;
+    }
+
+    int encontrado = 0;
+    for (int i = 0; i < quantidade; i++) {
+        if ((opcao == 1 && carros[i].codigoProduto == chave) ||
+            (opcao == 2 && strcmp(carros[i].nome, nome) == 0)) {
+            printf("\nCarro encontrado!\n");
+            printf("Nome: %s\n", carros[i].nome);
+            printf("Valor: %.2f\n", carros[i].valor);
+            printf("Código do produto: %d\n", carros[i].codigoProduto);
+            printf("Ano: %s\n", carros[i].ano);
+            encontrado = 1;
+            break;
+        }
+    }
+    if (!encontrado) {
+        printf("Carro nao encontrado!\n");
+    }
+}
+
+void listarCarros(Carro carros[]) {
+    printf("\n                             |---------------------------LISTA DE CARROS CADASTRADOS-----------------------|   \n");
+    if (quantidade == 0) {
+        printf("Nenhum carro cadastrado.\n");
+        return;
+    }
+    for (int i = 0; i < quantidade; i++) {
+        printf("Nome: %s\n", carros[i].nome);
+        printf("Valor: %.2f\n", carros[i].valor);
+        printf("Código do produto: %d\n", carros[i].codigoProduto);
+        printf("Ano: %s\n", carros[i].ano);
+        printf("\n");
+    }
+}
+
+void listarCarrosPorValor(Carro carros[], int crescente) {
+    Carro temp;
+    for (int i = 0; i < quantidade - 1; i++) {
+        for (int j = i + 1; j < quantidade; j++) {
+            if ((crescente && carros[i].valor > carros[j].valor) || (!crescente && carros[i].valor < carros[j].valor)) {
+                temp = carros[i];
+                carros[i] = carros[j];
+                carros[j] = temp;
+            }
+        }
+    }
+    listarCarros(carros); // Listar carros após a ordenação
+}
